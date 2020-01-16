@@ -1,4 +1,4 @@
-name: rainbow
+name: rainbow-from-yml
 channels:
   - pytorch
 dependencies:
