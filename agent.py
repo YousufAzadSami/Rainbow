@@ -50,6 +50,9 @@ class Agent():
   # Acts based on single state (no batch)
   def act(self, state):
     with torch.no_grad():
+      # (self.online_net(state.unsqueeze(0)) * self.support).sum(2).argmax(1).item()
+      # value1 = (self.online_net(state.unsqueeze(0)) * self.support)
+      # value2 = sum(2).argmax(1).item()
       return (self.online_net(state.unsqueeze(0)) * self.support).sum(2).argmax(1).item()
 
   # Acts with an ε-greedy policy (used for evaluation only)

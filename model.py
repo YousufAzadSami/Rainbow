@@ -61,24 +61,28 @@ class DQN(nn.Module):
       self.convs = nn.Sequential(nn.Conv2d(args.history_length, 32, 5, stride=5, padding=0), nn.ReLU(),
                                  nn.Conv2d(32, 64, 5, stride=5, padding=0), nn.ReLU())
       self.conv_output_size = 576
+    elif args.architecture == 'YAZ':
+      self.conv_output_size = 2 # hardcoded for now
     self.fc_h_v = NoisyLinear(self.conv_output_size, args.hidden_size, std_init=args.noisy_std)
     self.fc_h_a = NoisyLinear(self.conv_output_size, args.hidden_size, std_init=args.noisy_std)
     self.fc_z_v = NoisyLinear(args.hidden_size, self.atoms, std_init=args.noisy_std)
     self.fc_z_a = NoisyLinear(args.hidden_size, action_space * self.atoms, std_init=args.noisy_std)
 
+  # x.size() : torch.Size([1, 4, 84, 84])
   def forward(self, x, log=False):
     # YAZ : Here
-    x = self.convs(x)
-    x = x.view(-1, self.conv_output_size)
+    # Refer to note
+    x = self.convs(x) # convs(x) : convs is the convolutional layer. it's like out = net(in) torch.Size([1, 64, 7, 7]) < torch.Size([1, 4, 84, 84])
+    x = x.view(-1, self.conv_output_size) # reshape or something torch.Size([1, 3136] < torch.Size([1, 64, 7, 7])
     v = self.fc_z_v(F.relu(self.fc_h_v(x)))  # Value stream
-    a = self.fc_z_a(F.relu(self.fc_h_a(x)))  # Advantage stream
-    v, a = v.view(-1, 1, self.atoms), a.view(-1, self.action_space, self.atoms)
-    q = v + a - a.mean(1, keepdim=True)  # Combine streams
+    a = self.fc_z_a(F.relu(self.fc_h_a(x)))  # Advantage stream torch.Size([1, 51])
+    v, a = v.view(-1, 1, self.atoms), a.view(-1, self.action_space, self.atoms) # torch.Size([1, 306])
+    q = v + a - a.mean(1, keepdim=True)  # Combine streams torch.Size([1, 6, 51])
     if log:  # Use log softmax for numerical stability
       q = F.log_softmax(q, dim=2)  # Log probabilities with action over second dimension
     else:
       q = F.softmax(q, dim=2)  # Probabilities with action over second dimension
-    return q
+    return q # torch.Size([1, 6, 51])
 
   def reset_noise(self):
     for name, module in self.named_children():
