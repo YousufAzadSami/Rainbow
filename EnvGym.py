@@ -4,6 +4,12 @@ import gym
 env = gym.make('CartPole-v0')
 env.reset()
 
+# Debug to find the data type
+# Ctrl + , to find the class
+actions = env.action_space
+observations = env.observation_space
+
+
 for episodes in range(10):
     observation = env.reset()
     for timesteps in range(100):
