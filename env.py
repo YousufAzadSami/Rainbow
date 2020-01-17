@@ -22,6 +22,8 @@ class Env():
     self.life_termination = False  # Used to check if resetting only from loss of life
     self.window = args.history_length  # Number of frames to concatenate
     self.state_buffer = deque([], maxlen=args.history_length)
+
+    # This variable does not seem to be important
     self.training = True  # Consistent with model training mode
 
   def _get_state(self):
