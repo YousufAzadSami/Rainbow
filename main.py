@@ -27,8 +27,8 @@ parser.add_argument('--game', type=str, default='space_invaders', choices=atari_
 parser.add_argument('--T-max', type=int, default=int(50e6), metavar='STEPS', help='Number of training steps (4x number of frames)')
 parser.add_argument('--max-episode-length', type=int, default=int(108e3), metavar='LENGTH', help='Max episode length in game frames (0 to disable)')
 parser.add_argument('--history-length', type=int, default=4, metavar='T', help='Number of consecutive states processed')
-parser.add_argument('--architecture', type=str, default='canonical', choices=['canonical', 'data-efficient'], metavar='ARCH', help='Network architecture')
-parser.add_argument('--hidden-size', type=int, default=512, metavar='SIZE', help='Network hidden size')
+parser.add_argument('--architecture', type=str, default='YAZ', choices=['canonical', 'data-efficient'], metavar='ARCH', help='Network architecture')
+parser.add_argument('--hidden-size', type=int, default=128, metavar='SIZE', help='Network hidden size')
 parser.add_argument('--noisy-std', type=float, default=0.1, metavar='σ', help='Initial standard deviation of noisy linear layers')
 parser.add_argument('--atoms', type=int, default=51, metavar='C', help='Discretised size of value distribution')
 parser.add_argument('--V-min', type=float, default=-10, metavar='V', help='Minimum of value distribution support')
@@ -112,7 +112,6 @@ def save_memory(memory, memory_path, disable_bzip):
 env = Env(args)
 env.train()
 action_space = env.action_space()
-print(action_space)
 
 
 # Agent
