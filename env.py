@@ -32,6 +32,8 @@ class Env():
     for _ in range(self.window):
       self.state_buffer.append(torch.zeros(84, 84, device=self.device))
 
+  # Only reset() and step() is called from outside env.py
+  # Return state size : # torch.Size([4, 84, 84])
   def reset(self):
     if self.life_termination:
       self.life_termination = False  # Reset flag
@@ -51,6 +53,8 @@ class Env():
     self.lives = self.ale.lives()
     return torch.stack(list(self.state_buffer), 0)
 
+  # Only reset() and step() is called from outside env.py
+  # Return state size : # torch.Size([4, 84, 84])
   def step(self, action):
     # Repeat action 4 times, max pool over last 2 frames
     frame_buffer = torch.zeros(2, 84, 84, device=self.device)
