@@ -16,6 +16,7 @@ from env import Env
 from memory import ReplayMemory
 from test import test
 
+# region arg
 
 # Note that hyperparameters may originally be reported in ATARI game frames instead of agent steps
 parser = argparse.ArgumentParser(description='Rainbow')
@@ -56,7 +57,9 @@ parser.add_argument('--checkpoint-interval', default=0, help='How often to check
 parser.add_argument('--memory', help='Path to save/load the memory from')
 parser.add_argument('--disable-bzip-memory', action='store_true', help='Don\'t zip the memory file. Not recommended (zipping is a bit slower and much, much smaller)')
 
-# Setup
+# endregion
+
+# region Setup
 
 # print the args
 args = parser.parse_args()
@@ -103,6 +106,7 @@ def save_memory(memory, memory_path, disable_bzip):
     with bz2.open(memory_path, 'wb') as zipped_pickle_file:
       pickle.dump(memory, zipped_pickle_file)
 
+# endregion
 
 # Environment
 env = Env(args)
@@ -113,6 +117,8 @@ print(action_space)
 
 # Agent
 dqn_agent = Agent(args, env)
+
+# region arg_stuff
 
 # If a model is provided, and evaluate is false, presumably we want to resume, so try to load memory
 if args.model is not None and not args.evaluate:
@@ -141,6 +147,8 @@ while T < args.evaluation_size:
   state = next_state
   T += 1
 
+# endregion
+
 if args.evaluate:
   dqn_agent.eval()  # Set DQN (online network) to evaluation mode
   avg_reward, avg_Q = test(args, 0, dqn_agent, val_mem, metrics, results_dir, evaluate=True)  # Test
@@ -156,13 +164,18 @@ else:
     if T % args.replay_frequency == 0:
       dqn_agent.reset_noise()  # Draw a new set of noisy weights
 
-    action = dqn_agent.act(state)  # Choose an action greedily (with noisy weights)
-    next_state, reward, done = env.step(action)  # Step
+    # Choose an action greedily (with noisy weights)
+    action = dqn_agent.act(state)
+
+    # Step
+    next_state, reward, done = env.step(action)
 
     if args.reward_clip > 0:
       reward = max(min(reward, args.reward_clip), -args.reward_clip)  # Clip rewards
 
     mem.append(state, action, reward, done)  # Append transition to memory
+
+    # region train_black_magic
 
     # Train and test
     if T >= args.learn_start:
@@ -188,7 +201,9 @@ else:
       # Checkpoint the network
       if (args.checkpoint_interval != 0) and (T % args.checkpoint_interval == 0):
         dqn_agent.save(results_dir, 'checkpoint.pth')
+    # endregion
 
+    # Change step
     state = next_state
 
 env.close()
