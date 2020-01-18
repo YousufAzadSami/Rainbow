@@ -53,7 +53,7 @@ class Env():
     observation = self._get_state()
     self.state_buffer.append(observation)
     self.lives = self.ale.lives()
-    return torch.stack(list(self.state_buffer), 0)
+    return torch.stack(list(self.state_buffer), 0)  # returns observation
 
   # Only reset() and step() is called from outside env.py
   # Return state size : # torch.Size([4, 84, 84])
