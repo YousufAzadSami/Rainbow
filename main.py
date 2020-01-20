@@ -11,6 +11,7 @@ import numpy as np
 import torch
 from tqdm import trange
 
+from EnvGym import EnvGym
 from agent import Agent
 from env import Env
 from memory import ReplayMemory
@@ -109,8 +110,9 @@ def save_memory(memory, memory_path, disable_bzip):
 # endregion
 
 # Environment
-env = Env(args)
-env.train()
+# env = Env(args)
+# env.train()
+env = EnvGym("MountainCar-v0")
 action_space = env.action_space()
 
 

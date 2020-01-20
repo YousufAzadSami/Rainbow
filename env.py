@@ -35,7 +35,7 @@ class Env():
       self.state_buffer.append(torch.zeros(84, 84, device=self.device))
 
   # Only reset() and step() is called from outside env.py
-  # Return state size : # torch.Size([4, 84, 84])
+  # Return state size : # torch.Size([4, 84, 84]) dtype = dtype
   def reset(self):
     if self.life_termination:
       self.life_termination = False  # Reset flag
@@ -56,7 +56,7 @@ class Env():
     return torch.stack(list(self.state_buffer), 0)  # returns observation
 
   # Only reset() and step() is called from outside env.py
-  # Return state size : # torch.Size([4, 84, 84])
+  # Return state size : # torch.Size([4, 84, 84]) dtype = dtype
   def step(self, action):
     # Repeat action 4 times, max pool over last 2 frames
     frame_buffer = torch.zeros(2, 84, 84, device=self.device)

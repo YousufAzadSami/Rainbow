@@ -2,8 +2,6 @@ import gym
 import torch
 import numpy as np
 
-print("yup!")
-
 
 def playgroundGym():
     # env = gym.make("MountainCar-v0")
@@ -16,6 +14,10 @@ def playgroundGym():
     # The variable type of env.observation_space and the one we get from env.step() is different
     observations = env.observation_space
     print(observations)
+
+    observations2, _, _, _ = env.step(env.action_space.sample())
+    converted = torch.from_numpy(observations2)
+    print(converted)
 
     for episodes in range(10):
         observation = env.reset()
@@ -36,7 +38,9 @@ def playgroundGym():
                 break
     env.close()
 
-def play():
+# playgroundGym()
+
+def playgroundTorch():
     tor = torch.rand(3, 4)
     print(tor)
     print(tor.type())
@@ -46,25 +50,35 @@ def play():
     print(type(num))
 
     # torch.Size([4, 5])
-    cha = torch.from_numpy(num)
-    print(cha)
-    print(type(cha))
+    converted = torch.from_numpy(num)
+    print(converted)
+    print(type(converted))
 
-class EnvGym:
-    def __init__(self):
-        self.envGym = gym.make("MountainCar-v0")
+    convertedFloat = converted.float()
+    print(type(convertedFloat))
+
+
+
+# playgroundTorch()
+
+class EnvGym():
+    def __init__(self, game_name):
+        self.envGym = gym.make(game_name)
 
     def reset(self):
         observation = self.envGym.reset()
         # print(type(observation))
-        return torch.from_numpy(observation)
+        return torch.from_numpy(observation).float()
 
-    def step(self):
-        action = self.envGym.action_space.sample()
+    def step(self, action):
+        # action = self.envGym.action_space.sample()
         observation, reward, done, _ = self.envGym.step(action)
-        return torch.from_numpy(observation), reward, done
+        return torch.from_numpy(observation).float(), reward, done
+    def action_space(self):
+        return self.envGym.action_space.n
 
-
-env_gym = EnvGym()
-env_gym.reset()
-env_gym.step()
+# envGym = EnvGym("MountainCar-v0")
+# observation = envGym.reset()
+# observation_con01 = observation.float()
+# observation_con02 = torch.as_tensor(observation, dtype=torch.float32)
+# print(observation_con02)

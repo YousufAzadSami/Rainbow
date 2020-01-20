@@ -62,7 +62,7 @@ class DQN(nn.Module):
                                  nn.Conv2d(32, 64, 5, stride=5, padding=0), nn.ReLU())
       self.conv_output_size = 576
     elif args.architecture == 'YAZ':
-      self.conv_output_size = 2 # hardcoded for now
+      self.conv_output_size = 2 # hardcoded for now, number of states
     self.fc_h_v = NoisyLinear(self.conv_output_size, args.hidden_size, std_init=args.noisy_std)
     self.fc_h_a = NoisyLinear(self.conv_output_size, args.hidden_size, std_init=args.noisy_std)
     self.fc_z_v = NoisyLinear(args.hidden_size, self.atoms, std_init=args.noisy_std)
@@ -72,7 +72,7 @@ class DQN(nn.Module):
   def forward(self, x, log=False):
     # YAZ : Here
     # Refer to note
-    x = self.convs(x) # convs(x) : convs is the convolutional layer. it's like out = net(in) torch.Size([1, 64, 7, 7]) < torch.Size([1, 4, 84, 84])
+    # x = self.convs(x) # convs(x) : convs is the convolutional layer. it's like out = net(in) torch.Size([1, 64, 7, 7]) < torch.Size([1, 4, 84, 84])
     x = x.view(-1, self.conv_output_size) # reshape or something torch.Size([1, 3136] < torch.Size([1, 64, 7, 7])
     v = self.fc_z_v(F.relu(self.fc_h_v(x)))  # Value stream
     a = self.fc_z_a(F.relu(self.fc_h_a(x)))  # Advantage stream torch.Size([1, 51])
