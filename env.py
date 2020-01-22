@@ -51,8 +51,10 @@ class Env():
           self.ale.reset_game()
     # Process and return "initial" state
     observation = self._get_state()
+    # self.state {deque : 4}
     self.state_buffer.append(observation)
     self.lives = self.ale.lives()
+    # turns a list into a tensor according to dim parameter
     return torch.stack(list(self.state_buffer), 0)  # returns observation
 
   # Only reset() and step() is called from outside env.py

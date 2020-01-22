@@ -43,7 +43,41 @@ def playgroundGym():
 def playgroundTorch():
     tor = torch.rand(3, 4)
     print(tor)
+    print(type(tor))
     print(tor.type())
+    print(tor.size())
+
+    tor = torch.rand(3)
+    print(tor.size())
+
+    # print(observation)
+    # print(type(observation))
+    # print(observation.shape())
+
+    # region result
+    # tensor([[0.5455, 0.6471, 0.6017, 0.2713],
+    #         [0.5937, 0.2467, 0.4359, 0.2361],
+    #         [0.2094, 0.9217, 0.5257, 0.9479]])
+    # <
+    #
+    # class 'torch.Tensor'>
+    #
+    # torch.FloatTensor
+    # torch.Size([3, 4])
+    # torch.Size([3])
+    # tensor([[0.0000, 0.0000, 0.0000, ..., 0.0000, 0.0000, 0.0000],
+    #         [0.0000, 0.0000, 0.0000, ..., 0.0000, 0.0000, 0.0000],
+    #         [0.0000, 0.0000, 0.0000, ..., 0.0000, 0.0000, 0.0000],
+    #         ...,
+    #         [0.3098, 0.3098, 0.3098, ..., 0.3098, 0.3098, 0.3098],
+    #         [0.3098, 0.3098, 0.3098, ..., 0.3098, 0.3098, 0.3098],
+    #         [0.3098, 0.3098, 0.3098, ..., 0.3098, 0.3098, 0.3098]])
+    # <
+    #
+    # class 'torch.Tensor'>
+    #
+    # torch.Size([84, 84])
+    # endregion
 
     num = np.arange(20).reshape(4, 5)
     print(num)
@@ -82,3 +116,5 @@ class EnvGym():
 # observation_con01 = observation.float()
 # observation_con02 = torch.as_tensor(observation, dtype=torch.float32)
 # print(observation_con02)
+
+

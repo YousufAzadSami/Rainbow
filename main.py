@@ -110,11 +110,13 @@ def save_memory(memory, memory_path, disable_bzip):
 # endregion
 
 # Environment
-# env = Env(args)
-# env.train()
+env_test = Env(args)
+env_test.train()
+env_test_state = env_test.reset()
+
 env = EnvGym("MountainCar-v0")
 action_space = env.action_space()
-
+state_test = env.reset()
 
 # Agent
 dqn_agent = Agent(args, env)
