@@ -6,7 +6,23 @@ import torch
 
 
 Transition = namedtuple('Transition', ('timestep', 'state', 'action', 'reward', 'nonterminal'))
-blank_trans = Transition(0, torch.zeros(84, 84, dtype=torch.uint8), None, 0, False)
+
+# tor = torch.tensor([-0.4256,  0.0000])
+# tor[-1].mul(255).to(dtype=torch.uint8, device=torch.device('cpu'))
+# tensor(0, dtype=torch.uint8)
+#
+# tor0 = tor[-1].mul(255).to(dtype=torch.uint8, device=torch.device('cpu'))
+# tensor(0, dtype=torch.uint8)
+#
+# tor00 = torch.tensor(0)
+# tensor(0)
+# tor01 = torch.tensor([0])
+# tensor([0])
+#
+# tor02 = torch.zeros(0, dtype=torch.uint8)
+# tensor([], dtype=torch.uint8)
+
+blank_trans = Transition(0, torch.tensor(0, dtype=torch.uint8, device=torch.device('cpu')), None, 0, False)
 
 
 # Segment tree data structure where parent node values are sum/max of children node values
@@ -76,8 +92,10 @@ class ReplayMemory():
     self.transitions = SegmentTree(capacity)  # Store transitions in a wrap-around cyclic buffer within a sum tree for querying priorities
 
   # Adds state and action at time t, reward and terminal at time t + 1
+  # YAZ : state - {Tensor : 2 } tensor([-0.4256,  0.0000])
   def append(self, state, action, reward, terminal):
-    state = state[-1].mul(255).to(dtype=torch.uint8, device=torch.device('cpu'))  # Only store last frame and discretise to save memory
+    # Only store last frame and discretise to save memory # Transition(timestep=0, state=tensor(0, dtype=torch.uint8), action=None, reward=None, nonterminal=True)
+    state = state[-1].mul(255).to(dtype=torch.uint8, device=torch.device('cpu'))
     self.transitions.append(Transition(self.t, state, action, reward, not terminal), self.transitions.max)  # Store new transition with maximum priority
     self.t = 0 if terminal else self.t + 1  # Start new episodes with t = 0
 
@@ -112,17 +130,28 @@ class ReplayMemory():
     # Create un-discretised state and nth next state
 
     # YAZ
-    state_array = []
-    for trans in transition[:self.history]:
-      state_array.append(trans.state)
-    state04 = torch.stack(state_array)
-    state03 = state04.to(device=self.device)
-    state02 = state03.to(dtype=torch.float32)
-    state01 = state02.div_(255)
-    state00 = state01
+    # transition = {ndarray : (7,)}
+    # [Transition(timestep=96, state=tensor(0, dtype=torch.uint8), action=1, reward=-1.0, nonterminal=True),
+    #  Transition(timestep=97, state=tensor(0, dtype=torch.uint8), action=1, reward=-1.0, nonterminal=True),
+    #  Transition(timestep=98, state=tensor(0, dtype=torch ...
 
+    # trans = {Transition: 5}
+    # Transition(timestep=96, state=tensor(0, dtype=torch.uint8), action=1, reward=-1.0, nonterminal=True)
+
+    # state_array = []
+    # for trans in transition[:self.history]:
+    #   state_array.append(trans.state)
+    # # [tensor([0], dtype=torch.uint8), tensor([0], dtype=torch.uint8), tensor([0], dtype=torch.uint8), tensor(0, dtype=torch.uint8)]
+    # # RuntimeError: invalid argument 0: Tensors must have same number of dimensions: got 2 and 1
+    # state04 = torch.stack(state_array)
+    # state03 = state04.to(device=self.device)
+    # state02 = state03.to(dtype=torch.float32)
+    # state01 = state02.div_(255)
+    # state = state01 # tensor([0., 0., 0., 0.])
+
+    # state = tensor([0., 0., 0., 0.])
     state = torch.stack([trans.state for trans in transition[:self.history]]).to(device=self.device).to(dtype=torch.float32).div_(255)
-    state_00 = torch.stack([trans.state for trans in transition[:self.history]])
+    # state_00 = torch.stack([trans.state for trans in transition[:self.history]])
 
     next_state = torch.stack([trans.state for trans in transition[self.n:self.n + self.history]]).to(device=self.device).to(dtype=torch.float32).div_(255)
     # Discrete action to be used as index

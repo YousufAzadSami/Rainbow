@@ -118,3 +118,13 @@ class EnvGym():
 # print(observation_con02)
 
 
+# tensor([-0.4256,  0.0000])
+# torch.Size([2])
+# tensor(0, dtype=torch.uint8)
+#
+#
+#
+# tensor([0, 1])
+# torch.Size([2])
+# tensor(255)
+# tensor(255, dtype=torch.uint8)

@@ -60,7 +60,7 @@ class Agent():
     return np.random.randint(0, self.action_space) if np.random.random() < epsilon else self.act(state)
 
   def learn(self, mem):
-    # Sample transitions
+    # Sample transition_s
     idxs, states, actions, returns, next_states, nonterminals, weights = mem.sample(self.batch_size)
 
     # Calculate current state probabilities (online network noise already sampled)
@@ -97,7 +97,7 @@ class Agent():
     (weights * loss).mean().backward()  # Backpropagate importance-weighted minibatch loss
     self.optimiser.step()
 
-    mem.update_priorities(idxs, loss.detach().cpu().numpy())  # Update priorities of sampled transitions
+    mem.update_priorities(idxs, loss.detach().cpu().numpy())  # Update priorities of sampled transition_s
 
   def update_target_net(self):
     self.target_net.load_state_dict(self.online_net.state_dict())
