@@ -128,3 +128,20 @@ class EnvGym():
 # torch.Size([2])
 # tensor(255)
 # tensor(255, dtype=torch.uint8)
+
+# y = torch.tensor(range(20))
+# tensor([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+#         18, 19])
+# y = y.view(2, 10)
+# tensor([[ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9],
+#         [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]])
+# y = y.view(2, -1) // -1 means, Python will figure out that number
+# tensor([[ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9],
+#         [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]])
+# y[:, 3:6]
+# tensor([[ 3,  4,  5],
+#         [13, 14, 15]])
+# y[1, 3:6]
+# tensor([13, 14, 15])
+# y[1, range(3,6)]
+# tensor([13, 14, 15])
