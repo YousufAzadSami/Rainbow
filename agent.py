@@ -69,6 +69,7 @@ class Agent():
 
     with torch.no_grad():
       # Calculate nth next state probabilities
+      # next_states : torch.Size([32, 4])
       pns = self.online_net(next_states)  # Probabilities p(s_t+n, ·; θonline)
       dns = self.support.expand_as(pns) * pns  # Distribution d_t+n = (z, p(s_t+n, ·; θonline))
       argmax_indices_ns = dns.sum(2).argmax(1)  # Perform argmax action selection using online network: argmax_a[(z, p(s_t+n, a; θonline))]
@@ -81,7 +82,8 @@ class Agent():
       # Error : pns_a = pns[range(self.batch_size), argmax_indices_ns]
       # IndexError: shape mismatch: indexing tensors could not be broadcast together with shapes [32], [64]
       # pns shape : torch.Size([64, 3, 51])
-      pns_a = pns[range(self.batch_size), argmax_indices_ns]  # Double-Q probabilities p(s_t+n, argmax_a[(z, p(s_t+n, a; θonline))]; θtarget)
+      # pns_a = pns[range(self.batch_size), argmax_indices_ns[0:32]]  # Double-Q probabilities p(s_t+n, argmax_a[(z, p(s_t+n, a; θonline))]; θtarget)
+      pns_a = pns[range(self.batch_size), argmax_indices_ns]
 
       # Compute Tz (Bellman operator T applied to z)
       Tz = returns.unsqueeze(1) + nonterminals * (self.discount ** self.n) * self.support.unsqueeze(0)  # Tz = R^n + (γ^n)z (accounting for terminal states)

@@ -4,8 +4,8 @@ import numpy as np
 
 
 def playgroundGym():
-    # env = gym.make("MountainCar-v0")
-    env = gym.make('CartPole-v0')
+    env = gym.make("MountainCar-v0")
+    # env = gym.make('CartPole-v0')
     env.reset()
 
     # Debug to find the data type
@@ -31,10 +31,10 @@ def playgroundGym():
             # env.step(1)
             observation, reward, done, info = env.step(action)
 
-            print(observation)
+            print("#{0} timestep : {1}".format(timesteps, observation))
 
             if done:
-                print("Episode #{0} ended after {1} timesteps".format(episodes, timesteps))
+                print("Episode #{0} ended after {1} timesteps\n\n".format(episodes, timesteps))
                 break
     env.close()
 
@@ -91,7 +91,100 @@ def playgroundTorch():
     convertedFloat = converted.float()
     print(type(convertedFloat))
 
+# region numpy_indexing_slicing
+# np.arange(10)
+# > array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+# np.arange(10).reshape(2,5)
+# > array([[0, 1, 2, 3, 4],
+#        [5, 6, 7, 8, 9]])
+# np.arange(10).reshape(2,-1)
+# > array([[0, 1, 2, 3, 4],
+#        [5, 6, 7, 8, 9]])
+# np.arange(10).reshape(2,-2)
+# > array([[0, 1, 2, 3, 4],
+#        [5, 6, 7, 8, 9]])
+# np.arange(10).reshape(2,-3)
+# > array([[0, 1, 2, 3, 4],
+#        [5, 6, 7, 8, 9]])
+# x = np.arange(10).reshape(2,-3)
+# x
+# > array([[0, 1, 2, 3, 4],
+#        [5, 6, 7, 8, 9]])
+# x[-1]
+# > array([5, 6, 7, 8, 9])
+# x = np.arange(15).reshape(3,-3)
+# x
+# > array([[ 0,  1,  2,  3,  4],
+#        [ 5,  6,  7,  8,  9],
+#        [10, 11, 12, 13, 14]])
+# np.arange(15).reshape(3,-3)
+# > array([[ 0,  1,  2,  3,  4],
+#        [ 5,  6,  7,  8,  9],
+#        [10, 11, 12, 13, 14]])
+# np.arange(15).reshape(3,-1)
+# > array([[ 0,  1,  2,  3,  4],
+#        [ 5,  6,  7,  8,  9],
+#        [10, 11, 12, 13, 14]])
+# np.arange(15).reshape(3,-5)
+# > array([[ 0,  1,  2,  3,  4],
+#        [ 5,  6,  7,  8,  9],
+#        [10, 11, 12, 13, 14]])
+# x = np.arange(15).reshape(3,-1)
+# x
+# > array([[ 0,  1,  2,  3,  4],
+#        [ 5,  6,  7,  8,  9],
+#        [10, 11, 12, 13, 14]])
+# x[-1]
+# > array([10, 11, 12, 13, 14])
+# x[-1]
+# > array([10, 11, 12, 13, 14])
+# x[-2]
+# > array([5, 6, 7, 8, 9])
+# x[-3]
+# > array([0, 1, 2, 3, 4])
+# x[-4]
+# Traceback (most recent call last):
+#   File "<input>", line 1, in <module>
+# IndexError: index -4 is out of bounds for axis 0 with size 3
+# y = np.arange(10)
+# y
+# > array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+# y[-2]
+# > 8
+# y[1:5]
+# > array([1, 2, 3, 4])
+# y[0:5]
+# > array([0, 1, 2, 3, 4])
+# y[-1:5]
+# > array([], dtype=int64)
+# y[-1:-5]
+# > array([], dtype=int64)
+# y[1:-5]
+# > array([1, 2, 3, 4])
+# y[1:-2]
+# > array([1, 2, 3, 4, 5, 6, 7])
+# y[1:-2]
+# > array([1, 2, 3, 4, 5, 6, 7])
+# y[1:6:2]
+# > array([1, 3, 5])
+# np.arange(24).reshape(2, 3, 4)
+# > array([[[ 0,  1,  2,  3],
+#         [ 4,  5,  6,  7],
+#         [ 8,  9, 10, 11]],
+#        [[12, 13, 14, 15],
+#         [16, 17, 18, 19],
+#         [20, 21, 22, 23]]])
+# z = np.arange(24).reshape(2, 3, 4)
+# z[-1]
+# > array([[12, 13, 14, 15],
+#        [16, 17, 18, 19],
+#        [20, 21, 22, 23]])
+# z[1, -1]
+# > array([20, 21, 22, 23])
+# z[0, -1]
+# > array([ 8,  9, 10, 11])
 
+# endregion
 
 # playgroundTorch()
 
