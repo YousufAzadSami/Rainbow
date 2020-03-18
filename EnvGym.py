@@ -15,9 +15,22 @@ def playgroundGym():
     observations = env.observation_space
     print(observations)
 
-    observations2, _, _, _ = env.step(env.action_space.sample())
-    converted = torch.from_numpy(observations2)
-    print(converted)
+    observation, _, _, _ = env.step(env.action_space.sample())
+    observation_torch = torch.from_numpy(observation)
+    print(observation_torch)
+    # this output is in the format of env.py output of states
+    observation_stack = torch.stack([observation_torch, observation_torch, observation_torch])
+    # observation_stack_stack = torch.stack([observation_stack, observation_stack])
+    print("end 01")
+
+    var = []
+    var.append(observation_torch)
+    var.append(observation_torch)
+    var.append(observation_torch)
+    # this output is in the format of env.py output of states
+    observation_stack2 = torch.stack(var)
+    print("end 02")
+
 
     for episodes in range(10):
         observation = env.reset()
@@ -191,6 +204,29 @@ def playgroundTorch():
 class EnvGym():
     def __init__(self, game_name):
         self.envGym = gym.make(game_name)
+        self.frame_num = 4
+
+    def reset_2(self):
+        list_observations = []
+        for i in range(self.frame_num):
+            observation = self.envGym.reset()
+            observation_2x2 = np.array([observation, [1, 1]])
+            list_observations.append(torch.from_numpy(observation_2x2).float())
+        return torch.stack(list_observations)
+
+    # original - [4 , 84, 84]
+#                [2, 1] > [4, 2, 2]
+    def step_2(self, action):
+        list_observations = []
+        rewards = 0
+        for i in range(self.frame_num):
+            observation, reward, done, _ = self.envGym.step(action)
+            observation_2x2 = np.array([observation, [1, 1]])
+            list_observations.append(torch.from_numpy(observation_2x2).float())
+            # print("#{0} observation : {1}".format(i, observation))
+            rewards = rewards + reward
+            # TODO : What to do about 'done'
+        return torch.stack(list_observations), rewards, done
 
     def reset(self):
         observation = self.envGym.reset()
@@ -201,11 +237,44 @@ class EnvGym():
         # action = self.envGym.action_space.sample()
         observation, reward, done, _ = self.envGym.step(action)
         return torch.from_numpy(observation).float(), reward, done
+
     def action_space(self):
         return self.envGym.action_space.n
 
-# envGym = EnvGym("MountainCar-v0")
-# observation = envGym.reset()
+    def close(self):
+        self.envGym.close()
+
+envGym = EnvGym("MountainCar-v0")
+observation_1 = envGym.reset()
+
+observation_2, reward, done = envGym.step(2)
+print("end")
+
+# IMPORTANT
+# Have a look at this to under stand the tensor size and it's dimensions
+# a = torch.tensor(2)
+# a.shape
+# torch.Size([])
+# b = torch.tensor([44])
+# b.shape
+# torch.Size([1])
+# c = torch.tensor([1, 3])
+# c.shape
+# torch.Size([2])
+# d = torch.tensor([1, 3, 5, 7])
+# d.shape
+# torch.Size([4])
+# e = torch.tensor([[111, 33, 55, 5], [12, 12, 23, 45]])
+# e
+# tensor([[111,  33,  55,   5],
+#         [ 12,  12,  23,  45]])
+# e.shape
+# torch.Size([2, 4])
+# f = torch.tensor([[[111, 33, 55, 5], [12, 12, 23, 45]], [[111, 33, 55, 5], [12, 12, 23, 45]], [[111, 33, 55, 5], [12, 12, 23, 45]]])
+# f.shape
+# torch.Size([3, 2, 4])
+
+
 # observation_con01 = observation.float()
 # observation_con02 = torch.as_tensor(observation, dtype=torch.float32)
 # print(observation_con02)

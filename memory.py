@@ -25,10 +25,38 @@ Transition = namedtuple('Transition', ('timestep', 'state', 'action', 'reward', 
 
 # endregion
 
+# region debug2
+
+# a = torch.tensor(334)
+# a
+# tensor(334)
+# a.shape
+# torch.Size([])
+#
+# b = torch.zeros(0)
+# b
+# tensor([])
+# b.shape
+# torch.Size([0])
+#
+# c = torch.zeros(1)
+# c
+# tensor([0.])
+# c.shape
+# torch.Size([1])
+
+# d = torch.zeros(0,0)
+# d
+# tensor([], size=(0, 0))
+# d.shape
+# torch.Size([0, 0])
+
+# endregion
+
 # blank_trans = Transition(0, torch.zeros(84, 84, dtype=torch.uint8), None, 0, False)
 # YAZ : HERE
 #
-blank_trans = Transition(0, torch.zeros(1, dtype=torch.uint8, device=torch.device('cpu')), None, 0, False)
+blank_trans = Transition(0, torch.tensor(0, dtype=torch.uint8, device=torch.device('cpu')), None, 0, False)
 
 
 # Segment tree data structure where parent node values are sum/max of children node values
@@ -96,12 +124,36 @@ class ReplayMemory():
     self.priority_exponent = args.priority_exponent
     self.t = 0  # Internal episode timestep counter
     self.transitions = SegmentTree(capacity)  # Store transitions in a wrap-around cyclic buffer within a sum tree for querying priorities
-    print("YAZ")
 
   # Adds state and action at time t, reward and terminal at time t + 1
   # YAZ : state - {Tensor : 2 } tensor([-0.4256,  0.0000])
   def append(self, state, action, reward, terminal):
     # Transition(timestep=0, state=tensor(0, dtype=torch.uint8), action=None, reward=None, nonterminal=True)
+
+    # a = torch.tensor(334)
+    # a
+    # tensor(334)
+    # a.shape
+    # torch.Size([])
+    #
+    # b = torch.zeros(0)
+    # b
+    # tensor([])
+    # b.shape
+    # torch.Size([0])
+    #
+    # c = torch.zeros(1)
+    # c
+    # tensor([0.])
+    # c.shape
+    # torch.Size([1])
+
+    # d = torch.zeros(0, 0)
+    # d
+    # tensor([], size=(0, 0))
+    # d.shape
+    # torch.Size([0, 0])
+
     state = state[-1].mul(255).to(dtype=torch.uint8, device=torch.device('cpu'))  # Only store last frame and discretise to save memory
     self.transitions.append(Transition(self.t, state, action, reward, not terminal), self.transitions.max)  # Store new transition with maximum priority
     self.t = 0 if terminal else self.t + 1  # Start new episodes with t = 0
@@ -114,6 +166,9 @@ class ReplayMemory():
       if transition[t + 1].timestep == 0:
         transition[t] = blank_trans  # If future frame has timestep 0
       else:
+        # for example : Transition(timestep=13, state=tensor(255, dtype=torch.uint8), action=1, reward=-1.0, nonterminal=True)
+        # Transition[t=2].state - tensor(255, dtype=torch.uint8), shape - torch.Size([])
+        # Which resembles to the variable 'b' up here
         transition[t] = self.transitions.get(idx - self.history + 1 + t)
     for t in range(self.history, self.history + self.n):  # e.g. 4 5 6
       if transition[t - 1].nonterminal:
@@ -134,7 +189,7 @@ class ReplayMemory():
       # Resample if transition straddled current index or probablity 0
       if (self.transitions.index - idx) % self.capacity > self.n and ((idx - self.transitions.index) % self.capacity >= self.history) and (prob != 0):
         valid = True  # Note that conditions are valid but extra conservative around buffer index 0
-        print("iteration_num : " + str(iteration_num))
+        # print("iteration_num : " + str(iteration_num))
 
     # Retrieve all required transition data (from t - h to t + n)
     transition = self._get_transition(idx)

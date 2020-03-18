@@ -6,13 +6,16 @@ from plotly.graph_objs import Scatter
 from plotly.graph_objs.scatter import Line
 import torch
 
-from env import Env
-
+from EnvGym import EnvGym
 
 # Test DQN
 def test(args, T, dqn, val_mem, metrics, results_dir, evaluate=False):
-  env = Env(args)
-  env.eval()
+  # env = Env(args)
+  # env.eval()
+
+  env = EnvGym("MountainCar-v0")
+  action_space = env.action_space()
+
   metrics['steps'].append(T)
   T_rewards, T_Qs = [], []
 

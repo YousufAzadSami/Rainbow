@@ -69,11 +69,14 @@ class DQN(nn.Module):
     self.fc_z_a = NoisyLinear(args.hidden_size, action_space * self.atoms, std_init=args.noisy_std)
 
   # x.size() : torch.Size([1, 4, 84, 84])
+  # now it's : torch.Size([32, 4, 2, 2])
+  # now it's gonna change again
   def forward(self, x, log=False):
     # YAZ : Here
     # Refer to note
-    # x = self.convs(x) # convs(x) : convs is the convolutional layer. it's like out = net(in) torch.Size([1, 64, 7, 7]) < torch.Size([1, 4, 84, 84])
-    x = x.view(-1, self.conv_output_size) # reshape or something torch.Size([1, 3136] < torch.Size([1, 64, 7, 7])
+    # convs(x) : convs is the convolutional layer. it's like out = net(in). in : torch.Size([1, 4, 84, 84]), out : torch.Size([1, 64, 7, 7])
+    # x = self.convs(x)
+    x = x.view(-1, self.conv_output_size) # reshape or something. In : torch.Size([1, 3136], Out : torch.Size([1, 64, 7, 7])
     v = self.fc_z_v(F.relu(self.fc_h_v(x)))  # Value stream
     a = self.fc_z_a(F.relu(self.fc_h_a(x)))  # Advantage stream torch.Size([1, 51])
     v, a = v.view(-1, 1, self.atoms), a.view(-1, self.action_space, self.atoms) # torch.Size([1, 306])
