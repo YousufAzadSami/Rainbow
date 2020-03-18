@@ -1,0 +1,155 @@
+Index: model.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- model.py	(revision 8bccea5b525cb45048302686ab0c6faf2f8b2e73)
++++ model.py	(date 1584370891743)
+@@ -69,10 +69,13 @@
+     self.fc_z_a = NoisyLinear(args.hidden_size, action_space * self.atoms, std_init=args.noisy_std)
+ 
+   # x.size() : torch.Size([1, 4, 84, 84])
++  # now it's : torch.Size([32, 4, 2, 2])
+   def forward(self, x, log=False):
+     # YAZ : Here
+     # Refer to note
+-    # x = self.convs(x) # convs(x) : convs is the convolutional layer. it's like out = net(in) torch.Size([1, 64, 7, 7]) < torch.Size([1, 4, 84, 84])
++    # convs(x) : convs is the convolutional layer. it's like out = net(in). in : torch.Size([1, 4, 84, 84]), out : torch.Size([1, 64, 7, 7])
++    #
++    # x = self.convs(x)
+     x = x.view(-1, self.conv_output_size) # reshape or something torch.Size([1, 3136] < torch.Size([1, 64, 7, 7])
+     v = self.fc_z_v(F.relu(self.fc_h_v(x)))  # Value stream
+     a = self.fc_z_a(F.relu(self.fc_h_a(x)))  # Advantage stream torch.Size([1, 51])
+Index: memory.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- memory.py	(revision 8bccea5b525cb45048302686ab0c6faf2f8b2e73)
++++ memory.py	(date 1584370194642)
+@@ -28,7 +28,7 @@
+ # blank_trans = Transition(0, torch.zeros(84, 84, dtype=torch.uint8), None, 0, False)
+ # YAZ : HERE
+ #
+-blank_trans = Transition(0, torch.zeros(1, dtype=torch.uint8, device=torch.device('cpu')), None, 0, False)
++blank_trans = Transition(0, torch.zeros(2, 2, dtype=torch.uint8, device=torch.device('cpu')), None, 0, False)
+ 
+ 
+ # Segment tree data structure where parent node values are sum/max of children node values
+@@ -134,7 +134,7 @@
+       # Resample if transition straddled current index or probablity 0
+       if (self.transitions.index - idx) % self.capacity > self.n and ((idx - self.transitions.index) % self.capacity >= self.history) and (prob != 0):
+         valid = True  # Note that conditions are valid but extra conservative around buffer index 0
+-        print("iteration_num : " + str(iteration_num))
++        # print("iteration_num : " + str(iteration_num))
+ 
+     # Retrieve all required transition data (from t - h to t + n)
+     transition = self._get_transition(idx)
+Index: EnvGym.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- EnvGym.py	(revision 8bccea5b525cb45048302686ab0c6faf2f8b2e73)
++++ EnvGym.py	(date 1584373309997)
+@@ -15,9 +15,22 @@
+     observations = env.observation_space
+     print(observations)
+ 
+-    observations2, _, _, _ = env.step(env.action_space.sample())
+-    converted = torch.from_numpy(observations2)
+-    print(converted)
++    observation, _, _, _ = env.step(env.action_space.sample())
++    observation_torch = torch.from_numpy(observation)
++    print(observation_torch)
++    # this output is in the format of env.py output of states
++    observation_stack = torch.stack([observation_torch, observation_torch, observation_torch])
++    # observation_stack_stack = torch.stack([observation_stack, observation_stack])
++    print("end 01")
++
++    var = []
++    var.append(observation_torch)
++    var.append(observation_torch)
++    var.append(observation_torch)
++    # this output is in the format of env.py output of states
++    observation_stack2 = torch.stack(var)
++    print("end 02")
++
+ 
+     for episodes in range(10):
+         observation = env.reset()
+@@ -191,21 +204,40 @@
+ class EnvGym():
+     def __init__(self, game_name):
+         self.envGym = gym.make(game_name)
++        self.frame_num = 4
+ 
+     def reset(self):
+-        observation = self.envGym.reset()
+-        # print(type(observation))
+-        return torch.from_numpy(observation).float()
++        list_observations = []
++        for i in range(self.frame_num):
++            observation = self.envGym.reset()
++            observation_2x2 = np.array([observation, [1, 1]])
++            list_observations.append(torch.from_numpy(observation_2x2).float())
++        return torch.stack(list_observations)
+ 
++    # original - [4 , 84, 84]
++#                [2, 1] > [4, 2, 2]
+     def step(self, action):
+-        # action = self.envGym.action_space.sample()
+-        observation, reward, done, _ = self.envGym.step(action)
+-        return torch.from_numpy(observation).float(), reward, done
++        list_observations = []
++        rewards = 0
++        for i in range(self.frame_num):
++            observation, reward, done, _ = self.envGym.step(action)
++            observation_2x2 = np.array([observation, [1, 1]])
++            list_observations.append(torch.from_numpy(observation_2x2).float())
++            # print("#{0} observation : {1}".format(i, observation))
++            rewards = rewards + reward
++            # TODO : What to do about 'done'
++        return torch.stack(list_observations), rewards, done
++
+     def action_space(self):
+         return self.envGym.action_space.n
+ 
+ # envGym = EnvGym("MountainCar-v0")
+-# observation = envGym.reset()
++# observation_1 = envGym.reset()
++#
++# observation_2, _, _ = envGym.step(2)
++# print("end")
++
++
+ # observation_con01 = observation.float()
+ # observation_con02 = torch.as_tensor(observation, dtype=torch.float32)
+ # print(observation_con02)
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- main.py	(revision 8bccea5b525cb45048302686ab0c6faf2f8b2e73)
++++ main.py	(date 1584370953080)
+@@ -27,7 +27,7 @@
+ parser.add_argument('--game', type=str, default='space_invaders', choices=atari_py.list_games(), help='ATARI game')
+ parser.add_argument('--T-max', type=int, default=int(50e6), metavar='STEPS', help='Number of training steps (4x number of frames)')
+ parser.add_argument('--max-episode-length', type=int, default=int(108e3), metavar='LENGTH', help='Max episode length in game frames (0 to disable)')
+-# YAZ : The 4 in the size in next_states comes from here
++# YAZ : The 4 in the size in next_states comes from here. This influences argmax_indices_ns
+ parser.add_argument('--history-length', type=int, default=4, metavar='T', help='Number of consecutive states processed')
+ parser.add_argument('--architecture', type=str, default='YAZ', choices=['canonical', 'data-efficient'], metavar='ARCH', help='Network architecture')
+ parser.add_argument('--hidden-size', type=int, default=128, metavar='SIZE', help='Network hidden size')
+@@ -47,8 +47,8 @@
+ parser.add_argument('--reward-clip', type=int, default=1, metavar='VALUE', help='Reward clipping (0 to disable)')
+ parser.add_argument('--learning-rate', type=float, default=0.0000625, metavar='η', help='Learning rate')
+ parser.add_argument('--adam-eps', type=float, default=1.5e-4, metavar='ε', help='Adam epsilon')
+-parser.add_argument('--batch-size', type=int, default=32, metavar='SIZE', help='Batch size')
+-parser.add_argument('--learn-start', type=int, default=int(1e2), metavar='STEPS', help='Number of steps before starting training')
++parser.add_argument('--batch-size', type=int, default=16, metavar='SIZE', help='Batch size')
++parser.add_argument('--learn-start', type=int, default=int(1000), metavar='STEPS', help='Number of steps before starting training')
+ parser.add_argument('--evaluate', action='store_true', help='Evaluate only')
+ parser.add_argument('--evaluation-interval', type=int, default=100000, metavar='STEPS', help='Number of training steps between evaluations')
+ parser.add_argument('--evaluation-episodes', type=int, default=10, metavar='N', help='Number of evaluation episodes to average over')
