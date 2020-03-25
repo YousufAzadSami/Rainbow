@@ -34,6 +34,7 @@ def playgroundGym():
 
     for episodes in range(10):
         observation = env.reset()
+        rewards = 0
         for timesteps in range(100):
             env.render()
             # action = 0 or 1
@@ -44,14 +45,16 @@ def playgroundGym():
             # env.step(1)
             observation, reward, done, info = env.step(action)
 
-            print("#{0} timestep : {1}".format(timesteps, observation))
+            rewards = rewards + reward
+
+            print("#{0} Reward : {2}, Timestep : {1}".format(timesteps, observation, rewards))
 
             if done:
                 print("Episode #{0} ended after {1} timesteps\n\n".format(episodes, timesteps))
                 break
     env.close()
 
-# playgroundGym()
+playgroundGym()
 
 def playgroundTorch():
     tor = torch.rand(3, 4)
@@ -244,11 +247,11 @@ class EnvGym():
     def close(self):
         self.envGym.close()
 
-envGym = EnvGym("MountainCar-v0")
-observation_1 = envGym.reset()
-
-observation_2, reward, done = envGym.step(2)
-print("end")
+# envGym = EnvGym("MountainCar-v0")
+# observation_1 = envGym.reset()
+#
+# observation_2, reward, done = envGym.step(2)
+# print("end")
 
 # IMPORTANT
 # Have a look at this to under stand the tensor size and it's dimensions
