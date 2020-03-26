@@ -34,7 +34,7 @@ parser.add_argument('--hidden-size', type=int, default=128, metavar='SIZE', help
 parser.add_argument('--noisy-std', type=float, default=0.1, metavar='σ', help='Initial standard deviation of noisy linear layers')
 parser.add_argument('--atoms', type=int, default=51, metavar='C', help='Discretised size of value distribution')
 parser.add_argument('--V-min', type=float, default=-10, metavar='V', help='Minimum of value distribution support')
-parser.add_argument('--V-max', type=float, default=10, metavar='V', help='Maximum of value distribution support')
+parser.add_argument('--V-max', type=float, default=30, metavar='V', help='Maximum of value distribution support')
 parser.add_argument('--model', type=str, metavar='PARAMS', help='Pretrained model (state dict)')
 parser.add_argument('--memory-capacity', type=int, default=int(1e6), metavar='CAPACITY', help='Experience replay memory capacity')
 # this does not seem to do anything. I was wrong
@@ -42,7 +42,7 @@ parser.add_argument('--replay-frequency', type=int, default=4, metavar='k', help
 parser.add_argument('--priority-exponent', type=float, default=0.5, metavar='ω', help='Prioritised experience replay exponent (originally denoted α)')
 parser.add_argument('--priority-weight', type=float, default=0.4, metavar='β', help='Initial prioritised experience replay importance sampling weight')
 parser.add_argument('--multi-step', type=int, default=3, metavar='n', help='Number of steps for multi-step return')
-parser.add_argument('--discount', type=float, default=0.99, metavar='γ', help='Discount factor')
+parser.add_argument('--discount', type=float, default=0.95, metavar='γ', help='Discount factor')
 parser.add_argument('--target-update', type=int, default=int(8e3), metavar='τ', help='Number of steps after which to update target network')
 parser.add_argument('--reward-clip', type=int, default=1, metavar='VALUE', help='Reward clipping (0 to disable)')
 parser.add_argument('--learning-rate', type=float, default=0.0000625, metavar='η', help='Learning rate')

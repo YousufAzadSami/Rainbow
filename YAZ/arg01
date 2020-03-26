@@ -1,5 +1,5 @@
 ('--target-update', type=int,       default=int(8000), metavar='τ', help='Number of steps after which to update target network')
-('--T-max', type=int,               default=int(50e6), metavar='STEPS', help='Number of training steps (4x number of frames)')
+('--T-max', type=int,               default=int(5e7), metavar='STEPS', help='Number of training steps (4x number of frames)')
 ('--learn-start', type=int,         default=int(10000), metavar='STEPS', help='Number of steps before starting training')
 ('--memory-capacity', type=int,     default=int(1e6), metavar='CAPACITY', help='Experience replay memory capacity')
 ('--replay-frequency', type=int,    default=4, metavar='k', help='Frequency of sampling from memory')

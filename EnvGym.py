@@ -54,7 +54,7 @@ def playgroundGym():
                 break
     env.close()
 
-playgroundGym()
+# playgroundGym()
 
 def playgroundTorch():
     tor = torch.rand(3, 4)
