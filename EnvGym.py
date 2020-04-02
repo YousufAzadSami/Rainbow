@@ -247,6 +247,9 @@ class EnvGym():
     def close(self):
         self.envGym.close()
 
+    def render(self):
+        self.envGym.render()
+
 # envGym = EnvGym("MountainCar-v0")
 # observation_1 = envGym.reset()
 #

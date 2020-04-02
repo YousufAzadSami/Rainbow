@@ -33,8 +33,8 @@ parser.add_argument('--architecture', type=str, default='YAZ', choices=['canonic
 parser.add_argument('--hidden-size', type=int, default=128, metavar='SIZE', help='Network hidden size')
 parser.add_argument('--noisy-std', type=float, default=0.1, metavar='σ', help='Initial standard deviation of noisy linear layers')
 parser.add_argument('--atoms', type=int, default=51, metavar='C', help='Discretised size of value distribution')
-parser.add_argument('--V-min', type=float, default=-10, metavar='V', help='Minimum of value distribution support')
-parser.add_argument('--V-max', type=float, default=30, metavar='V', help='Maximum of value distribution support')
+parser.add_argument('--V-min', type=float, default=-25, metavar='V', help='Minimum of value distribution support')
+parser.add_argument('--V-max', type=float, default=-5, metavar='V', help='Maximum of value distribution support')
 parser.add_argument('--model', type=str, metavar='PARAMS', help='Pretrained model (state dict)')
 parser.add_argument('--memory-capacity', type=int, default=int(1e6), metavar='CAPACITY', help='Experience replay memory capacity')
 # this does not seem to do anything. I was wrong
@@ -54,7 +54,7 @@ parser.add_argument('--evaluation-interval', type=int, default=100000, metavar='
 parser.add_argument('--evaluation-episodes', type=int, default=10, metavar='N', help='Number of evaluation episodes to average over')
 # TODO: Note that DeepMind's evaluation method is running the latest agent for 500K frames ever every 1M steps
 parser.add_argument('--evaluation-size', type=int, default=500, metavar='N', help='Number of transitions to use for validating Q')
-parser.add_argument('--render', action='store_true', help='Display screen (testing only)')
+parser.add_argument('--render', action='store_false', help='Display screen (testing only)')
 parser.add_argument('--enable-cudnn', action='store_true', help='Enable cuDNN (faster but nondeterministic)')
 parser.add_argument('--checkpoint-interval', default=0, help='How often to checkpoint the model, defaults to 0 (never checkpoint)')
 parser.add_argument('--memory', help='Path to save/load the memory from')

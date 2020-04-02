@@ -12,6 +12,7 @@ from EnvGym import EnvGym
 def test(args, T, dqn, val_mem, metrics, results_dir, evaluate=False):
   # env = Env(args)
   # env.eval()
+  # TODO : Possible error because of the eval mode 
 
   env = EnvGym("MountainCar-v0")
   action_space = env.action_space()
