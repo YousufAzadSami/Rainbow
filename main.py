@@ -156,6 +156,12 @@ while T < args.evaluation_size:
 
 # endregion
 
+# YAZ
+dqn_agent.eval()  # Set DQN (online network) to evaluation mode
+avg_reward, avg_Q = test(args, 0, dqn_agent, val_mem, metrics, results_dir, evaluate=True)  # Test
+print('Avg. reward: ' + str(avg_reward) + ' | Avg. Q: ' + str(avg_Q))
+dqn_agent.train()  # Set DQN (online network) back to training mode
+
 if args.evaluate:
   dqn_agent.eval()  # Set DQN (online network) to evaluation mode
   avg_reward, avg_Q = test(args, 0, dqn_agent, val_mem, metrics, results_dir, evaluate=True)  # Test

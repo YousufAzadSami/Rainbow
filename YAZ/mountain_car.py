@@ -52,6 +52,9 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
             # Get next state and reward
             state2, reward, done, info = env.step(action)
 
+            if(reward > -1.0 or reward < -1.0):
+                print(reward)
+
             # if i == 4999:
             #     print('\n\nEpisode {} Average Reward: {}'.format(i + 1, reward))
 
@@ -82,17 +85,11 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
         # Track rewards
         reward_list.append(tot_reward)
 
-        if (i + 1) % 100 == 0:
+        if (i + 1) % 500 == 0:
             ave_reward = np.mean(reward_list)
             ave_reward_list.append(ave_reward)
             reward_list = []
-
-        if (i + 1) % 100 == 0:
             print('Episode {} Average Reward: {}'.format(i + 1, ave_reward))
-            env.render()
-
-        if i >= (episodes - 20):
-            print('\n\nEpisode {} Average Reward: {}'.format(i + 1, ave_reward))
 
 
     env.close()
