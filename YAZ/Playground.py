@@ -64,27 +64,22 @@ def playgroundGymFresh():
     env = gym.make('MountainCar-v0')  # try for different environements
     env.reset()
 
-
     # actions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]   # push left
     # actions = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]   # no push
     # actions = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]   # push right
-    actions = [0, 0, 0, 0, 0, 0, 0, 0]
+    actions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 2, 0, 2, 1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1]
 
-    for timesteps in range(250):
-
+    for timesteps in range(200):
         env.render()
-
-        action = actions[timesteps % len(actions)]
-
-        observation, reward, done, info = env.step(action)
+        action = actions[timesteps]
         timesteps = timesteps + 1
 
+        observation, reward, done, info = env.step(action)
         print("Timestep : {0:3d}, Action: {1}, Reward: {2}".format(timesteps, action, reward))
 
         if done:
             print("Finished after {} timesteps".format(timesteps + 1))
             break
-
     env.close()
 
 playgroundGymFresh()

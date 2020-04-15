@@ -26,6 +26,8 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
     # Calculate episodic reduction in epsilon
     reduction = (epsilon - min_eps) / episodes
 
+    file = open("actions", "w")
+
     # Run Q learning algorithm
     for i in range(episodes):
         # Initialize parameters
@@ -37,10 +39,17 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
         state_adj = (state - env.observation_space.low) * np.array([10, 100])
         state_adj = np.round(state_adj, 0).astype(int)
 
+        timesteps = 0
+
+        file.write("\nEpisode #{0} : ".format(i))
+
         while done != True:
+
+            timesteps = timesteps + 1
+
             # Render environment for last five episodes
             if i >= (episodes - 20):
-                print('\n\nEpisode {} Average Reward: {}'.format(i + 1, ave_reward))
+                # print('\n\nEpisode {} Average Reward: {}'.format(i + 1, ave_reward))
                 env.render()
 
             # Determine next action - epsilon greedy strategy
@@ -48,6 +57,9 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
                 action = np.argmax(Q[state_adj[0], state_adj[1]])
             else:
                 action = np.random.randint(0, env.action_space.n)
+
+            # print("{0} ".format(action))
+            file.write("{0}, ".format(action))
 
             # Get next state and reward
             state2, reward, done, info = env.step(action)
@@ -65,7 +77,6 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
             # Allow for terminal states
             if done and state2[0] >= 0.5:
                 Q[state_adj[0], state_adj[1], action] = reward
-
             # Adjust Q value for current state
             else:
                 delta = learning * (reward +
@@ -84,6 +95,7 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
 
         # Track rewards
         reward_list.append(tot_reward)
+        file.write("\ntot_reward {0}".format(tot_reward))
 
         if (i + 1) % 500 == 0:
             ave_reward = np.mean(reward_list)
@@ -91,7 +103,9 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
             reward_list = []
             print('Episode {} Average Reward: {}'.format(i + 1, ave_reward))
 
+        # f.write("\Reward : " + )
 
+    file.close()
     env.close()
 
     return ave_reward_list
