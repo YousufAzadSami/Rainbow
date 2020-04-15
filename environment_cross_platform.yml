@@ -1,0 +1,15 @@
+name: rainbow-from-yml
+channels:
+  - matsci
+  - conda-forge
+  - defaults
+  - akode
+dependencies:
+  - plotly
+  - pytorch
+  - tqdm
+  - pip
+  - matplotlib
+  - pillow
+prefix: /home/sami-mint/anaconda3/envs/rainbow-from-yml
+
