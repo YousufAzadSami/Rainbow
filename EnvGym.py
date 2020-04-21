@@ -8,6 +8,7 @@ class EnvGym():
     def __init__(self, game_name):
         self.envGym = gym.make(game_name)
         self.frame_num = 4
+        self.done_counter = 0
 
     def reset_2(self):
         list_observations = []
@@ -39,6 +40,15 @@ class EnvGym():
     def step(self, action):
         # action = self.envGym.action_space.sample()
         observation, reward, done, _ = self.envGym.step(action)
+
+        if(done == True):
+            if(self.done_counter > 5):
+                self.done_counter = 0
+            else:
+                done = False
+                reward = 0
+                self.done_counter = self.done_counter + 1
+
         return torch.from_numpy(observation).float(), reward, done
 
     def action_space(self):
