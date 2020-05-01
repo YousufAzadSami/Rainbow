@@ -31,7 +31,7 @@ parser.add_argument('--max-episode-length', type=int, default=int(108e3), metava
 parser.add_argument('--history-length', type=int, default=2, metavar='T', help='Number of consecutive states processed')
 parser.add_argument('--architecture', type=str, default='YAZ', choices=['canonical', 'data-efficient', 'YAZ'], metavar='ARCH', help='Network architecture')
 parser.add_argument('--hidden-size', type=int, default=128, metavar='SIZE', help='Network hidden size')
-parser.add_argument('--noisy-std', type=float, default=0.1, metavar='σ', help='Initial standard deviation of noisy linear layers')
+parser.add_argument('--noisy-std', type=float, default=1.0, metavar='σ', help='Initial standard deviation of noisy linear layers')
 parser.add_argument('--atoms', type=int, default=51, metavar='C', help='Discretised size of value distribution')
 parser.add_argument('--V-min', type=float, default=-25, metavar='V', help='Minimum of value distribution support')
 parser.add_argument('--V-max', type=float, default=-5, metavar='V', help='Maximum of value distribution support')
@@ -122,6 +122,9 @@ action_space = env.action_space()
 # state_test.shape : torch.Size([2])
 state_test = env.reset()
 
+file = open("console_output_2", "w")
+env.set_file(file)
+
 # Agent
 dqn_agent = Agent(args, env)
 
@@ -170,9 +173,18 @@ else:
   # Training loop
   dqn_agent.train()
   T, done = 0, True
+
+
+  episode_num = 0
+  timestep_num = 0
+  frameSkip = 20
+
   for T in trange(1, args.T_max + 1):
     if done:
       state, done = env.reset(), False
+      timestep_num = 0
+      episode_num = episode_num + 1
+      file.write("\nEpisode : {0}".format(episode_num))
 
     if T % args.replay_frequency == 0:
       dqn_agent.reset_noise()  # Draw a new set of noisy weights
@@ -181,7 +193,14 @@ else:
     action = dqn_agent.act(state)
 
     # Step
-    next_state, reward, done = env.step(action)
+    for i in range(frameSkip):
+      next_state, reward, done = env.step(action)
+      timestep_num = timestep_num + 1
+      # file.write("\nTimestep : {0:3d}, Done : {1},  Position: {2:.2f}, Reward: {3}".format(timestep_num, done, next_state[0], reward))
+      if done is True:
+        break
+
+
 
     if args.reward_clip > 0:
       reward = max(min(reward, args.reward_clip), -args.reward_clip)  # Clip rewards
@@ -218,5 +237,5 @@ else:
 
     # Change step
     state = next_state
-
+file.close()
 env.close()

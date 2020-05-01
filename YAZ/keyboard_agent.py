@@ -18,7 +18,12 @@ ACTIONS = env.action_space.n
 SKIP_CONTROL = 0    # Use previous control decision SKIP_CONTROL times, that's how you
                     # can test what skip is still usable.
 
-human_agent_action = 0
+# 0	push left
+# 1	no push
+# 2	push right
+
+# IMPORTANT : This is the default action. Another one in key_release()
+human_agent_action = 1
 human_wants_restart = False
 human_sets_pause = False
 
@@ -27,16 +32,20 @@ def key_press(key, mod):
     if key==0xff0d: human_wants_restart = True
     if key==32: human_sets_pause = not human_sets_pause
     a = int( key - ord('0') )
-    if a <= 0 or a >= ACTIONS: return
+    if a < 0 or a >= ACTIONS: return
+    # print("Before : human_agent_action : {0}, a : {1}".format(human_agent_action, a))
     human_agent_action = a
+    print("key_press() : After : human_agent_action : {0}, a : {1}".format(human_agent_action, a))
 
 def key_release(key, mod):
     global human_agent_action
     a = int( key - ord('0') )
-    if a <= 0 or a >= ACTIONS: return
+    if a < 0 or a >= ACTIONS: return
     if human_agent_action == a:
-        human_agent_action = 0
+        human_agent_action = 1
+        print("key_release() : human_agent_action : {0}".format(human_agent_action))
 
+print("first render")
 env.render()
 env.unwrapped.viewer.window.on_key_press = key_press
 env.unwrapped.viewer.window.on_key_release = key_release
@@ -50,33 +59,41 @@ def rollout(env):
     total_timesteps = 0
     while 1:
         if not skip:
-            print("taking action {}".format(human_agent_action))
+            # print("taking action {}".format(human_agent_action))
             actions = human_agent_action
             total_timesteps += 1
             skip = SKIP_CONTROL
         else:
             skip -= 1
 
-        obser, reward, done, info = env.step(actions)
+        frameskip = 5
+        for i in range(frameskip + 1):
+            obser, reward, done, info = env.step(actions)
+
 
         # if reward != 0:
         #     print("reward %0.3f" % reward)
-        print("reward {0} :: timesteps : {1}".format(reward, total_timesteps))
+        # print("reward {0} :: timesteps : {1}".format(reward, total_timesteps))
 
         total_reward += reward
         window_still_open = env.render()
+
         if window_still_open==False: return False
         if done: break
         if human_wants_restart: break
         while human_sets_pause:
+            print("while human_sets_pause:")
             env.render()
             time.sleep(0.1)
-        time.sleep(0.1)
+
+        # time.sleep(0.1)
+
+
     print("timesteps %i reward %0.2f" % (total_timesteps, total_reward))
 
 print("ACTIONS={}".format(ACTIONS))
-print("Press keys 1 2 3 ... to 2222222take actions 1 2 3 ...")
-print("No keys pressed is taking action 0")
+print("Press keys 1 2 3 ... to take actions 1 2 3 ...")
+print("No keys pressed is taking action {0}".format(human_agent_action))
 
 while 1:
     window_still_open = rollout(env)

@@ -2,6 +2,7 @@ import gym
 import torch
 import numpy as np
 # import readchar
+from EnvGym import EnvGym
 
 
 def playgroundGym():
@@ -64,6 +65,10 @@ def playgroundGymFresh():
     env = gym.make('MountainCar-v0')  # try for different environements
     env.reset()
 
+    print("env.frameskip : {0}".format(env.frameskip))
+    env.frameskip = 10
+    print("env.frameskip : {0}".format(env.frameskip))
+
     # actions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]   # push left
     # actions = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]   # no push
     # actions = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]   # push right
@@ -82,10 +87,52 @@ def playgroundGymFresh():
             break
     env.close()
 
-playgroundGymFresh()
+# playgroundGymFresh()
 
+def playgroundGymFrameskip():
+    # env = gym.make('MountainCar-v0')  # try for different environements
+    env = EnvGym('MountainCar-v0')
+    env.reset()
 
+    done_counter = 0
+    frameSkip = 20
 
+    for episodes in range(1000):
+        observation, done = env.reset(), False
+        rewards = 0
+        timesteps = 0
+
+        while True:
+
+            # 1
+            # action = env.action_space.sample()
+            action = env.envGym.action_space.sample()
+            for i in range(frameSkip):
+                observation, reward, done = env.step(action)
+                timesteps = timesteps + 1
+                if done is True:
+                    break
+
+            #2
+            # action = env.envGym.action_space.sample()
+            # observation, reward, done = env.step(action)
+            # timesteps = timesteps + 20
+
+            rewards = rewards + reward
+
+            # print("#{0} Reward : {2}, Timestep : {1}".format(timesteps, observation, rewards))
+
+            if done:
+                if(timesteps < 200):
+                    done_counter = done_counter + 1
+                    print("Done#{2:3d} :: Episode #{0} ended after {1} timesteps".format(episodes, timesteps, done_counter))
+                if(timesteps > 200):
+                    print("HOW? : Episode : {0}".format(episodes))
+                break
+
+    env.close()
+
+playgroundGymFrameskip()
 
 
 def playgroundTorch():

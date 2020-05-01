@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="main_de" type="PythonConfigurationType" factoryName="Python">
+  <configuration default="false" name="keyboard_agent" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
     <module name="Rainbow-YAZ" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
@@ -7,12 +7,12 @@
       <env name="PYTHONUNBUFFERED" value="1" />
     </envs>
     <option name="SDK_HOME" value="" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/YAZ" />
     <option name="IS_MODULE_SDK" value="true" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
-    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
-    <option name="PARAMETERS" value="--target-update 2000 --T-max 150000 --learn-start 2500 --memory-capacity 100000 --replay-frequency 1 --multi-step 4 --hidden-size 256 --learning-rate 0.0001 --evaluation-interval 5000" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/YAZ/keyboard_agent.py" />
+    <option name="PARAMETERS" value="MountainCar-v0" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />

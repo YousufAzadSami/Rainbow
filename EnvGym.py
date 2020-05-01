@@ -9,6 +9,8 @@ class EnvGym():
         self.envGym = gym.make(game_name)
         self.frame_num = 4
         self.done_counter = 0
+        self.reached_flag = 0
+        self.file_local = None
 
     def reset_2(self):
         list_observations = []
@@ -32,6 +34,9 @@ class EnvGym():
             # TODO : What to do about 'done'
         return torch.stack(list_observations), rewards, done
 
+    def set_file(self, file):
+        self.file_local = file
+
     def reset(self):
         observation = self.envGym.reset()
         # print(type(observation))
@@ -39,11 +44,18 @@ class EnvGym():
 
     def step(self, action):
         # action = self.envGym.action_space.sample()
+
+        # for i in range(20):
         observation, reward, done, _ = self.envGym.step(action)
 
-        if(done == True):
-            if(self.done_counter > 5):
+        if done is True and observation[0] >= 0.5:
+            if self.done_counter >= 5:
                 self.done_counter = 0
+                self.reached_flag = self.reached_flag + 1
+                print("{0} : Agent is `done` for 5 steps".format(self.reached_flag))
+                if self.file_local is not None:
+                    self.file_local.write("\n{0} : Agent is `done` for the 5th step".format(self.reached_flag))
+                # break
             else:
                 done = False
                 reward = 0
